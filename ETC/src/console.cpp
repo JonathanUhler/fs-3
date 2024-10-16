@@ -3,6 +3,7 @@
 //
 
 #include "inc/console.h"
+#include "inc/parser.h"
 
 int32_t Console::run() {
 
@@ -14,8 +15,11 @@ int32_t Console::run() {
             cmd_buffer[num_char_received+1] = '\n';
             num_char_received = 0;
 
-            //ADD CODE HERE TO SEND BUFFER DATA TO CMD CLASS
+            Parser parser;
+            std::string response = parser.execute(std::string(cmd_buffer)) + "\n\r";
+            
             memset(cmd_buffer, 0, sizeof(cmd_buffer));
+            serial->write(response.c_str(), response.size() + 1);
             serial->write(PROMPT, sizeof(PROMPT));
             return 0;
         }

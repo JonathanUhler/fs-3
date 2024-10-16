@@ -51,12 +51,11 @@
 
 #include "inc/divider.h"
 #include <algorithm>
-#include <bit>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 
 
@@ -73,10 +72,6 @@ Divider::Divider(std::vector<std::vector<uint64_t>> lookup_table,
                  uint8_t constant_term_size,
                  uint8_t linear_term_size)
 {
-    if (lookup_table.size() <= 1) {
-        throw std::invalid_argument("lookup_table must have at least two intervals");
-    }
-
     this->lookup_table = lookup_table;
     this->constant_term_size = constant_term_size;
     this->linear_term_size = linear_term_size;
@@ -167,7 +162,8 @@ uint8_t Divider::get_x_local_size() const {
  * @param mantissa  a reference which will be set to the bits of the implicit mantissa of `x_dec`.
  */
 void Divider::reduce_range(float x_dec, uint8_t& exponent, uint32_t& mantissa) const {
-    uint32_t x = std::bit_cast<uint32_t>(x_dec);
+    uint32_t x;
+    std::memcpy(&x, &x_dec, sizeof(float));
 
     uint32_t exponent_mask = (1U << DIVIDER_EXPONENT_SIZE) - 1U;
     uint32_t mantissa_mask = (1U << DIVIDER_MANTISSA_SIZE) - 1U;
