@@ -15,7 +15,12 @@
 
 
 // Include other test files here. Remember to add test cases to the "run_all_tests" function!
-#include "test_update_brake_signal.h"
+#include "test_check_start_conditions.h"
+#include "test_reset_state.h"
+#include "test_run_stop_rtds.h"
+#include "test_update_mbb_alive.h"
+#include "test_update_state_from_can.h"
+#include "test_update_state.h"
 
 // Standard headers begin here
 #include "test_main.h"
@@ -32,8 +37,28 @@ ETCController *etcController;
  */
 void run_all_tests() {
     // Use the RUN_TEST(<function_name>) macro here
-    RUN_TEST(test_brake_pin_full_voltage_range);
-    RUN_TEST(test_brake_range_boundary);
+    RUN_TEST(TestCheckStartConditionsTsReadyOnly);
+    RUN_TEST(TestCheckStartConditionsBrakesReadOnly);
+    RUN_TEST(TestCheckStartConditionsNeither);
+    RUN_TEST(TestCheckStartConditionsBoth);
+
+    RUN_TEST(TestResetStateFromFilled);
+    RUN_TEST(TestResetStateFromUnfilled);
+
+    RUN_TEST(TestRunRtds);
+
+    RUN_TEST(TestMbbAliveSet);
+    RUN_TEST(TestHE1ReadSet);
+    RUN_TEST(TestHE2ReadSet);
+    RUN_TEST(TestHE1TravelSet);
+    RUN_TEST(TestHE2TravelSet);
+    RUN_TEST(TestPedalTravelSet);
+    RUN_TEST(TestBrakesReadSet);
+    RUN_TEST(TestTsReadySet);
+    RUN_TEST(TestMotorEnabledSet);
+    RUN_TEST(TestMotorForwardSet);
+    RUN_TEST(TestCockpitSet);
+    RUN_TEST(TestTorqueDemandSet);
 }
 
 

@@ -38,6 +38,13 @@ class ETCController {
 
     Ticker RTDS_Ticker;
 
+    // State Variables
+    ETCState state{0};
+    bool voltage_timer_running = false;
+    bool out_of_range_timer_running = false;
+
+
+public:
     // Constants
     const int16_t MAX_SPEED = 7500;
     const int16_t MAX_TORQUE = 30000;
@@ -47,13 +54,6 @@ class ETCController {
     const float VOLT_SCALE_he2 = 1./2.;
     const float PEDAL_RANGE = 20;
 
-    // State Variables
-    ETCState state{0};
-    bool voltage_timer_running = false;
-    bool out_of_range_timer_running = false;
-
-
-public:
     // Constructor
     ETCController()
         : HE1(PA_0),
