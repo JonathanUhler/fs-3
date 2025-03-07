@@ -102,6 +102,7 @@ int main() {
                 etc_handle->checkStartConditions();
             }
             else if (opcode == "reset") {
+                read_from_sensors = true;
                 etc_handle->resetState();
             }
             else if (opcode == "info") {
