@@ -9,6 +9,10 @@
 #include "mbed.h"
 #include "src/can_wrapper.h"
 #include "src/etc_controller.h"
+#include "src/console.h"
+#include <sstream>
+#include <string>
+#include <iostream>
 
 EventFlags global_events;
 ETCController* etc_handle;
@@ -65,9 +69,81 @@ int main() {
     Thread high_priority_thread(osPriorityHigh);
     high_priority_thread.start(do_can_processing);
 
+    Console console;
+    console.Write("> ", false);
+
+    bool read_from_sensors = true;
+    float he1_read;
+    float he2_read;
     while (true) {
-        /* update the etc-sensor readings */
-        etc_handle->updateState(HE1.read(), HE2.read());
+        if (read_from_sensors) {
+            he1_read = HE1.read();
+            he2_read = HE2.read();
+        }
+
+        bool has_message = console.Read();
+        if (has_message) {
+            std::istringstream message_stream(console.GetInput());
+            std::string opcode;
+            message_stream >> opcode;
+
+            if (opcode == "setv") {
+                read_from_sensors = false;
+                message_stream >> he1_read;
+                message_stream >> he2_read;
+                he1_read = (he1_read * etc_handle->VOLT_SCALE_he1) / etc_handle->MAX_V;
+                he2_read = (he2_read * etc_handle->VOLT_SCALE_he2) / etc_handle->MAX_V;
+            }
+            else if (opcode == "setp") {
+                read_from_sensors = false;
+                message_stream >> he1_read;
+                message_stream >> he2_read;
+                he1_read = (he1_read / 100.0 * 2.750) + 0.344;
+                he2_read = (he2_read / 100.0 * 2.000) + 0.250;
+                he1_read = he1_read * etc_handle->VOLT_SCALE_he1 / etc_handle->MAX_V;
+                he2_read = he2_read * etc_handle->VOLT_SCALE_he2 / etc_handle->MAX_V;
+            }
+            else if (opcode == "start") {
+                ETCState state = etc_handle->getState();
+                state.ts_ready = true;
+                state.brakes_read = etc_handle->BRAKE_TOL;
+                etc_handle->updateStateFromCAN(state);
+            }
+            else if (opcode == "reset") {
+                etc_handle->resetState();
+            }
+            else if (opcode == "info") {
+                console.Write("state");
+                console.Write("  mbb:        " + std::to_string(etc_handle->getMBBAlive()));
+                console.Write("  brakes:     " + std::to_string(etc_handle->getBrakes()));
+                console.Write("  he1 (%raw): " + std::to_string(etc_handle->getHE1Read()));
+                console.Write("  he2 (%raw): " + std::to_string(etc_handle->getHE2Read()));
+                console.Write("  he1 (%):    " + std::to_string(etc_handle->getHE1Travel()));
+                console.Write("  he2 (%):    " + std::to_string(etc_handle->getHE2Travel()));
+                console.Write("  pedal:      " + std::to_string(etc_handle->getPedalTravel()));
+                console.Write("  torque:     " + std::to_string(etc_handle->getTorqueDemand()));
+                console.Write("  forward:    " + std::to_string(etc_handle->isMotorForward()));
+                console.Write("  enabled:    " + std::to_string(etc_handle->isMotorEnabled()));
+                console.Write("  ts ready:   " + std::to_string(etc_handle->isTSReady()));
+                console.Write("  cockpit:    " + std::to_string(etc_handle->isCockpit()));
+            }
+            else if (opcode == "help") {
+                console.Write("commands");
+                console.Write("  setv <he1> <he2>  set hall-effect sensor voltages.");
+                console.Write("  setp <he1> <he2>  set hall-effect travel percent.");
+                console.Write("  start             sets the motor start conditions.");
+                console.Write("  reset             reset the ETC controller firmware.");
+                console.Write("  info              print ETC state values.");
+                console.Write("  help              print this message.");
+            }
+            else {
+                console.Write("error: unknown command. see 'help' for more information");
+            }
+
+            console.Write("> ", false);
+        }
+
+        etc_handle->updateState(he1_read, he2_read);
     }
 
     return 0;

@@ -18,7 +18,7 @@ project(ETC)
 
 
 # Main ETC executable target
-set(SRC_CPP_FILES src/can_wrapper.cpp src/etc_controller.cpp)
+set(SRC_CPP_FILES src/can_wrapper.cpp src/etc_controller.cpp src/console.cpp)
 add_executable(ETC main.cpp ${SRC_CPP_FILES})
 target_include_directories(ETC PRIVATE mbed-os)
 target_link_libraries(ETC mbed-os)

@@ -7,8 +7,8 @@
 // TODO make the function :)))
 void ETCController::updateState(float he1_read, float he2_read) {
 
-   float he1_voltage = (he1_read * MAX_V)/VOLT_SCALE_he1;
-   float he2_voltage = (he2_read * MAX_V)/VOLT_SCALE_he2;
+    float he1_voltage = (he1_read * MAX_V)/VOLT_SCALE_he1;
+    float he2_voltage = (he2_read * MAX_V)/VOLT_SCALE_he2;
 
     /* convert sensor voltages into travel percentages*/
     // voltage - 0.25/ 2 * range (0.20) * 100.0 to turn to percentage
