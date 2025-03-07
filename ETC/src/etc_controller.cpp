@@ -5,7 +5,7 @@
 #include "etc_controller.h"
 
 // TODO make the function :)))
-void ETCController::updatePedalTravel() {
+void ETCController::updatePedalTravel(float he1_read, float he2_read) {
     /* read HE1 and HE2 sensors */
 
     /* calculate pedal travel using voltage divider ratio */
@@ -14,14 +14,12 @@ void ETCController::updatePedalTravel() {
 
     /* update relevant values */
 
-    float VOLT_SCALE_he2 = 0.5f;
-
-    float he2_voltage = (HE2.read() * MAX_V)/VOLT_SCALE_he2;
+    float he2_voltage = (he2_read * MAX_V)/VOLT_SCALE_he2;
 
     /* convert sensor voltages into travel percentages*/
     float he2_travel_percent = (he2_voltage - 0.5f) / 4.f;
 
-    state.he2_read = HE2.read() * MAX_V;
+    state.he2_read = he2_read * MAX_V;
     state.he2_travel = he2_travel_percent;
     state.pedal_travel = he2_travel_percent;
     state.torque_demand = static_cast<int16_t>(static_cast<float>(MAX_TORQUE) * state.pedal_travel);

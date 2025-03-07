@@ -34,16 +34,18 @@ class ETCController {
 
     Ticker RTDS_Timer;
 
+    // State Variables
+    ETCState state{0};
+
+public:
     // Constants
     const int16_t MAX_SPEED = 7500;
     const int16_t MAX_TORQUE = 30000;
     const float MAX_V = 3.3;
     const float BRAKE_TOL = 0.1;
+    const float VOLT_SCALE_he1 = 330./480.;
+    const float VOLT_SCALE_he2 = 0.5f;
 
-    // State Variables
-    ETCState state{0};
-
-public:
     // Constructor
     ETCController()
         : HE1(PA_0),
@@ -67,7 +69,7 @@ public:
      * Read Hall Effect Sensors and then update ETC State. Checks implausibility also and starts
      * timer.
      */
-    void updatePedalTravel();
+    void updatePedalTravel(float he1_read, float he2_read);
 
     /**
      * Add to state.mbbalive and then %= 16
