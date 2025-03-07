@@ -71,11 +71,9 @@ int main() {
     Console::INSTANCE.Write("> ", false);
 
     bool read_from_sensors = true;
-    float he1_read;
     float he2_read;
     while (true) {
         if (read_from_sensors) {
-            he1_read = HE1.read();
             he2_read = HE2.read();
         }
 
@@ -87,18 +85,13 @@ int main() {
 
             if (opcode == "setv") {
                 read_from_sensors = false;
-                message_stream >> he1_read;
                 message_stream >> he2_read;
-                he1_read = (he1_read * etc_handle->VOLT_SCALE_he1) / etc_handle->MAX_V;
                 he2_read = (he2_read * etc_handle->VOLT_SCALE_he2) / etc_handle->MAX_V;
             }
             else if (opcode == "setp") {
                 read_from_sensors = false;
-                message_stream >> he1_read;
                 message_stream >> he2_read;
-                he1_read = (he1_read / 100.0 * 2.750) + 0.344;
-                he2_read = (he2_read / 100.0 * 2.000) + 0.250;
-                he1_read = he1_read * etc_handle->VOLT_SCALE_he1 / etc_handle->MAX_V;
+                he2_read = (he2_read / 100.0 * 4.000) + 0.500;
                 he2_read = he2_read * etc_handle->VOLT_SCALE_he2 / etc_handle->MAX_V;
             }
             else if (opcode == "start") {
@@ -120,12 +113,8 @@ int main() {
                                         std::to_string(etc_handle->getMBBAlive()));
                 Console::INSTANCE.Write("  brakes_read:   " +
                                         std::to_string(etc_handle->getBrakes()));
-                Console::INSTANCE.Write("  he1_read:      " +
-                                        std::to_string(etc_handle->getHE1Read()));
                 Console::INSTANCE.Write("  he2_read:      " +
                                         std::to_string(etc_handle->getHE2Read()));
-                Console::INSTANCE.Write("  he1_travel:    " +
-                                        std::to_string(etc_handle->getHE1Travel()));
                 Console::INSTANCE.Write("  he2_travel:    " +
                                         std::to_string(etc_handle->getHE2Travel()));
                 Console::INSTANCE.Write("  pedal_travel:  " +
@@ -146,13 +135,13 @@ int main() {
             }
             else if (opcode == "help") {
                 Console::INSTANCE.Write("commands");
-                Console::INSTANCE.Write("  setv <he1> <he2>  set hall-effect sensor voltages.");
-                Console::INSTANCE.Write("  setp <he1> <he2>  set hall-effect travel percent.");
-                Console::INSTANCE.Write("  start             sets the motor start conditions.");
-                Console::INSTANCE.Write("  reset             reset the ETC controller firmware.");
-                Console::INSTANCE.Write("  info              print ETC state values.");
-                Console::INSTANCE.Write("  debug             toggle debug messages.");
-                Console::INSTANCE.Write("  help              print this message.");
+                Console::INSTANCE.Write("  setv <he2>  set hall-effect sensor voltages.");
+                Console::INSTANCE.Write("  setp <he2>  set hall-effect travel percent.");
+                Console::INSTANCE.Write("  start       sets the motor start conditions.");
+                Console::INSTANCE.Write("  reset       reset the ETC controller firmware.");
+                Console::INSTANCE.Write("  info        print ETC state values.");
+                Console::INSTANCE.Write("  debug       toggle debug messages.");
+                Console::INSTANCE.Write("  help        print this message.");
             }
             else {
                 Console::INSTANCE.Write("error: unknown command. see 'help' for more information");
@@ -161,7 +150,7 @@ int main() {
             Console::INSTANCE.Write("> ", false);
         }
 
-        etc_handle->updatePedalTravel(he1_read, he2_read);
+        etc_handle->updatePedalTravel(0.0f, he2_read);
     }
 
     return 0;

@@ -90,7 +90,6 @@ public:
         throttleMessage.data[7] = 0x00;
 
         motorBus->write(throttleMessage);
-        printf("Sending Throttle...");
     }
 
     void sendSync() {
