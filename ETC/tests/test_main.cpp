@@ -59,6 +59,10 @@ void run_all_tests() {
     RUN_TEST(TestMotorForwardSet);
     RUN_TEST(TestCockpitSet);
     RUN_TEST(TestTorqueDemandSet);
+
+    RUN_TEST(TestHEMismatch);
+    RUN_TEST(TestHETemporaryMismatch);
+    RUN_TEST(TestHEVoltageRange);
 }
 
 

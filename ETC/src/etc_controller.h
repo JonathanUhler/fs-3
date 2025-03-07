@@ -25,8 +25,6 @@ struct ETCState {
 
 class ETCController {
     // Digital and Analog Inputs/Outputs
-    AnalogIn HE1;
-    AnalogIn HE2;
     AnalogIn Brakes;
     InterruptIn Cockpit;
     InterruptIn Reverse;
@@ -56,9 +54,7 @@ public:
 
     // Constructor
     ETCController()
-        : HE1(PA_0),
-          HE2(PB_0),
-          Brakes(PC_0),
+        : Brakes(PC_0),
           Cockpit(PH_1),
           Reverse(PC_15),
           RTDS(PC_13),
@@ -79,7 +75,7 @@ public:
      * Read Hall Effect Sensors and then update ETC State. Checks implausibility also and starts
      * timer.
      */
-    void updateState();
+    void updateState(float he1_read, float he2_read);
 
     /**
      * Add to state.mbbalive and then %= 16

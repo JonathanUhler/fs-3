@@ -5,10 +5,10 @@
 #include "etc_controller.h"
 
 // TODO make the function :)))
-void ETCController::updateState() {
+void ETCController::updateState(float he1_read, float he2_read) {
 
-   float he1_voltage = (HE1.read() * MAX_V)/VOLT_SCALE_he1;
-   float he2_voltage = (HE2.read() * MAX_V)/VOLT_SCALE_he2;
+   float he1_voltage = (he1_read * MAX_V)/VOLT_SCALE_he1;
+   float he2_voltage = (he2_read * MAX_V)/VOLT_SCALE_he2;
 
     /* convert sensor voltages into travel percentages*/
     // voltage - 0.25/ 2 * range (0.20) * 100.0 to turn to percentage
@@ -72,8 +72,8 @@ void ETCController::updateState() {
    float pedal_travel = (he1_travel_percent + he2_travel_percent) / 2.0f;
 
 
-   state.he1_read = HE1.read() * MAX_V;
-   state.he2_read = HE2.read() * MAX_V;
+   state.he1_read = he1_read * MAX_V;
+   state.he2_read = he2_read * MAX_V;
    state.he1_travel = he1_travel_percent;
    state.he2_travel = he2_travel_percent;
    state.pedal_travel = pedal_travel;

@@ -56,6 +56,9 @@ void do_can_processing() {
  * @return 1 if error
  */
 int main() {
+    AnalogIn HE1(PA_0);
+    AnalogIn HE2(PB_0);
+
     etc_handle = new ETCController();
     can_handle = new CANWrapper(*etc_handle, global_events);
 
@@ -64,7 +67,7 @@ int main() {
 
     while (true) {
         /* update the etc-sensor readings */
-        etc_handle->updateState();
+        etc_handle->updateState(HE1.read(), HE2.read());
     }
 
     return 0;
