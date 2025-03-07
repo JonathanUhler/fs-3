@@ -8,6 +8,7 @@
 #include "../mbed-os/mbed.h"
 #include "etc_controller.h"
 #include "module.h"
+#include "console.h"
 
 /**
  * Holds motor and main CAN bus, composes and handles routine CAN message, handles CAN Rx as well

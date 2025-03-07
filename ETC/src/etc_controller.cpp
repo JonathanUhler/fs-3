@@ -3,6 +3,7 @@
 //
 
 #include "etc_controller.h"
+#include "console.h"
 
 // TODO make the function :)))
 void ETCController::updateState(float he1_read, float he2_read) {
@@ -26,46 +27,56 @@ void ETCController::updateState(float he1_read, float he2_read) {
 
    /* calculate pedal travel using voltage divider ratio */
    if (abs_difference > 0.1f){
+       Console::INSTANCE.WriteDebug("HE difference is: " + std::to_string(abs_difference));
        if (!voltage_timer_running) {
            // we now start our timer, if it's not already running
            VoltageTimer.start();
            voltage_timer_running = true;
+           Console::INSTANCE.WriteDebug("  HE difference timer started");
        }
        else if (VoltageTimer.elapsed_time() > 100ms) {
            VoltageTimer.stop();
            VoltageTimer.reset();
            voltage_timer_running = false;
            state.motor_enabled = false;
+           Console::INSTANCE.WriteDebug("  HE difference timer exceeded 100ms, stopping motor");
            return;
            }
        else {
-               // if everything is good and timer is running, we reset
-               VoltageTimer.stop();
-               VoltageTimer.reset();
-               voltage_timer_running = false;
+           // if everything is good and timer is running, we reset
+           VoltageTimer.stop();
+           VoltageTimer.reset();
+           voltage_timer_running = false;
+           Console::INSTANCE.WriteDebug("  HE difference timer running");
         }
     }
 
     if (he1_voltage <= 0.0f || he1_voltage >= 3.3f ||
         he2_voltage <= 0.0f || he2_voltage >= 3.3f) {
+       Console::INSTANCE.WriteDebug("HE voltage out of range");
+       Console::INSTANCE.WriteDebug("  he1_voltage: " + std::to_string(he1_voltage));
+       Console::INSTANCE.WriteDebug("  he2_voltage: " + std::to_string(he2_voltage));
        if (!out_of_range_timer_running){
            // we now start our timer, if it's not already running
            OutOfRangeTimer.start();
            out_of_range_timer_running = true;
-           }
+           Console::INSTANCE.WriteDebug("  HE range timer started");
+       }
        else if (OutOfRangeTimer.elapsed_time() > 100ms){
            OutOfRangeTimer.stop();
            OutOfRangeTimer.reset();
            out_of_range_timer_running = false;
            state.motor_enabled = false;
+           Console::INSTANCE.WriteDebug("  HE range timer exceeded 100ms, stopping motor");
            return;
        }
        else if (voltage_timer_running) {
-               OutOfRangeTimer.stop();
-               OutOfRangeTimer.reset();
-               out_of_range_timer_running = false;
-           }
+           OutOfRangeTimer.stop();
+           OutOfRangeTimer.reset();
+           out_of_range_timer_running = false;
+           Console::INSTANCE.WriteDebug("  HE range timer running");
        }
+    }
 
 
    /* update relevant values */
@@ -99,8 +110,13 @@ void ETCController::checkStartConditions() {
 
     /* if all that is happening switch motor_on to true */
 
+    Console::INSTANCE.WriteDebug("checking start conditions");
+    Console::INSTANCE.WriteDebug("  ts_ready:    " + std::to_string(state.ts_ready));
+    Console::INSTANCE.WriteDebug("  brakes_read: " + std::to_string(state.brakes_read));
+    Console::INSTANCE.WriteDebug("  BRAKE_TOL:   " + std::to_string(BRAKE_TOL));
     if(state.ts_ready && state.brakes_read >= BRAKE_TOL) {
         state.motor_enabled = true;
+        Console::INSTANCE.WriteDebug("  motor has been enabled!");
     }
 }
 
